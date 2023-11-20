@@ -5,8 +5,9 @@
 // 概要 : 3Dモデル生成を行う
 //
 //=============================================================================
-
 #include "model_skin.h"
+#include "manager.h"
+#include "renderer.h"
 
 //=============================================================================
 //フレームを作成する
@@ -368,6 +369,14 @@ CSkinMesh::CSkinMesh()
 }
 
 //=============================================================================
+// 生成処理
+//=============================================================================
+CSkinMesh *Create()
+{
+	return NULL;
+}
+
+//=============================================================================
 // 開放処理
 //=============================================================================
 VOID CSkinMesh::Release() 
@@ -723,7 +732,7 @@ VOID CSkinMesh::CreateFrameArray(LPD3DXFRAME _pFrame)
 //=============================================================================
 // 更新処理
 //=============================================================================
-VOID CSkinMesh::Update(D3DXMATRIX _World) 
+VOID CSkinMesh::Update() 
 {
 	//押しっぱなしによる連続切り替え防止
 	static bool PushFlg = false; //ここでは仮でフラグを使用するが、本来はメンバ変数などにする
@@ -757,7 +766,7 @@ VOID CSkinMesh::Update(D3DXMATRIX _World)
 	}
 
 	//マトリックス行列反映
-	m_World = _World;
+	m_World = m_mtxWorld;
 
 	//アニメーション時間を更新
 	m_AnimeTime++;
@@ -766,8 +775,11 @@ VOID CSkinMesh::Update(D3DXMATRIX _World)
 //=============================================================================
 // スキンメッシュの描画
 //=============================================================================
-VOID CSkinMesh::Draw(LPDIRECT3DDEVICE9 lpD3DDevice) 
+VOID CSkinMesh::Draw() 
 {
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスのポインタ
+
 	//現在のアニメーション番号を適応
 	m_pAnimController->SetTrackAnimationSet(0, m_pAnimSet[m_CurrentTrack]);
 
@@ -781,7 +793,7 @@ VOID CSkinMesh::Draw(LPDIRECT3DDEVICE9 lpD3DDevice)
 	UpdateFrameMatrices(m_pFrameRoot, &m_World);
 
 	//アニメーション描画
-	DrawFrame(lpD3DDevice, m_pFrameRoot);
+	DrawFrame(pDevice, m_pFrameRoot);
 
 	//0(再生中の)トラックから更新したトラックデスクを取得する
 	m_pAnimController->GetTrackDesc(0, &m_CurrentTrackDesc);
