@@ -8,6 +8,7 @@
 #include "model_skin.h"
 #include "manager.h"
 #include "renderer.h"
+#include <assert.h>
 
 //=============================================================================
 //フレームを作成する
@@ -282,7 +283,7 @@ HRESULT MY_HIERARCHY::CreateMeshContainer(LPCSTR Name, CONST D3DXMESHDATA* pMesh
 //=============================================================================
 HRESULT MY_HIERARCHY::DestroyFrame(LPD3DXFRAME pFrameToFree)
 {
-	//2銃解放防止
+	//二重解放防止
 	// if (pFrameToFree == NULL)return S_FALSE;
 	SAFE_DELETE_ARRAY(pFrameToFree->Name);
 	if (pFrameToFree->pFrameFirstChild)
@@ -359,21 +360,50 @@ CSkinMesh::CSkinMesh()
 	m_CurrentTrackDesc.Enable = TRUE;
 
 	//影響度100%
-	m_CurrentTrackDesc.Weight = 1;
+	m_CurrentTrackDesc.Weight = 1.0f;
 
 	//開始位置初期化
-	m_CurrentTrackDesc.Position = 0;
+	m_CurrentTrackDesc.Position = 0.0;
 
 	//速度
-	m_CurrentTrackDesc.Speed = 1;
+	m_CurrentTrackDesc.Speed = 1.0f;
 }
 
 //=============================================================================
 // 生成処理
 //=============================================================================
-CSkinMesh *CSkinMesh::Create()
+CSkinMesh *CSkinMesh::Create(LPDIRECT3DDEVICE9 lpD3DDevice, LPSTR pMeshPass)
 {
-	return NULL;
+	// ポインタを宣言
+	CSkinMesh *pSkinMesh = NULL;	// スキンメッシュ生成用
+
+	if (pSkinMesh == NULL)
+	{ // 使用されていない場合
+
+		// メモリ確保
+		pSkinMesh = new CSkinMesh;	// スキンメッシュ
+	}
+	else { assert(false); return NULL; }	// 使用中
+
+	if (pSkinMesh != NULL)
+	{ // 確保に成功している場合
+
+		// スキンメッシュの初期化
+		if (FAILED(pSkinMesh->Init(lpD3DDevice, pMeshPass)))
+		{ // 初期化に失敗した場合
+
+			// メモリ開放
+			delete pSkinMesh;
+			pSkinMesh = NULL;
+
+			// 失敗を返す
+			return NULL;
+		}
+
+		// 確保したアドレスを返す
+		return pSkinMesh;
+	}
+	else { assert(false); return NULL; }	// 確保失敗
 }
 
 //=============================================================================
@@ -766,7 +796,7 @@ VOID CSkinMesh::Update()
 	}
 
 	//マトリックス行列反映
-	m_World = m_mtxWorld;
+	//m_World = ;
 
 	//アニメーション時間を更新
 	m_AnimeTime++;

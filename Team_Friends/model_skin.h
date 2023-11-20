@@ -116,7 +116,7 @@ public:
 	VOID FreeAnim(LPD3DXFRAME pFrame);
 
 	// 生成処理
-	CSkinMesh *Create();
+	CSkinMesh *Create(LPDIRECT3DDEVICE9 lpD3DDevice, LPSTR pMeshPass);
 
 	// 解放処理
 	VOID Release();
@@ -198,9 +198,6 @@ private:
 
 	// マテリアルデータ
 	D3DMATERIAL9 m_Material;
-
-	// ワールドマトリックス
-	D3DXMATRIX m_mtxWorld;
 };
 
 #endif	// _MODEL_SKIN_H_
