@@ -15,12 +15,10 @@
 #include "pause.h"
 #include "input.h"
 #include "fog.h"
-#include "model_skin.h"
 
 //==========================================================================
 // マクロ定義
 //==========================================================================
-CSkinMesh *g_pSkinMesh;
 
 //==========================================================================
 // コンストラクタ
@@ -126,10 +124,6 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	// 乱数の種を設定
 	srand((unsigned int)time(0));
 
-
-	g_pSkinMesh = DEBUG_NEW CSkinMesh;
-	g_pSkinMesh->Init(CManager::GetInstance()->GetRenderer()->GetDevice(), "data\\MODEL\\default.x");
-
 	return S_OK;
 }
 
@@ -158,10 +152,6 @@ void CRenderer::Uninit(void)
 //==========================================================================
 void CRenderer::Update(void)
 {
-
-	D3DXMATRIX mtx;
-	D3DXMatrixIdentity(&mtx);
-	g_pSkinMesh->Update(mtx);
 
 	// 全ての更新
 	CObject::UpdateAll();
@@ -222,8 +212,6 @@ void CRenderer::Draw(void)
 		{
 			CManager::GetInstance()->GetPause()->Draw();
 		}
-
-		g_pSkinMesh->Draw(CManager::GetInstance()->GetRenderer()->GetDevice());
 
 		// 黒フレーム
 		CManager::GetInstance()->GetBlackFrame()->Draw();
